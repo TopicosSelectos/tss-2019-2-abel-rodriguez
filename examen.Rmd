@@ -1,0 +1,133 @@
+---
+title: "Examen tópicos selectos"
+author: "Abel Rodríguez"
+date: "21 de noviembre de 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+Create a numeric vector that contains the eight planets of our solar system. Then, create another vector containing the name for each planet (Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune). After that, you should assign the number of the planet and its respective name. Finally, you should select and print the planets related to the names Earth, Mars, and Jupiter.
+
+```{r}
+  planet_index_vector <- c(1:8)
+  planet_name_vector <- c("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune")
+  
+  planets <- list(index = planet_index_vector, names = planet_name_vector)
+  planets$names[3:5]
+```
+
+# Question 2
+Construct a matrix with 10 rows containing the numbers 1 up to 50, filled row-wise.
+
+```{r}
+  my_matrix <- matrix(1:50, nrow = 10, byrow = TRUE)
+  my_matrix
+```
+
+# Question 3
+Create a factor with these observations "Breakfast", "Breakfast", "Breakfast", "Luch", "Luch", "Dinner", "Dinner", "Dinner", "Collation", "Collation", "Collation" and print a summary.
+
+```{r}
+  my_observations <- c("Breakfast", "Breakfast", "Breakfast", "Luch", "Luch", "Dinner", "Dinner", "Dinner", "Collation", "Collation", "Collation")
+
+  my_factor <- factor(my_observations)
+  summary(my_factor)
+```
+  
+# Question 4
+Create and print a data frame that should contain:
+
+  - 5 of your courses (e.g. Fundamentals of Programming, Object-Oriented Programming, Databases, etc ).
+  - 5 of your marks
+  - 5 of your professors' names
+
+```{r}
+    my_courses <- c("Métodos formales de especificación y desarrollo de software", "Topicos selectos de Ingeniería de Software", "Competencias comunicativas", "Sistemas distribuidos", "Métricas de software")
+    my_marks <- c(10, 8.5, 9.8, 9.4, 7.3)
+    my_teachers <- c("Alan Ponce", "Alan Ponce", "Telma Jovita", "Maritza Valenzuela", "Abraham López")
+    
+    my_data_frame <- data.frame(Courses = my_courses, Marks = my_marks, Teachers = my_teachers)
+    print(my_data_frame)
+```
+
+# Question 5
+Load the dataset labeled as odb.csv that is located in the data folder and storage this dataset in a variable called od. Then, you should describe the composition of the dataset. This description must contain the number of observations, variables and the type of each variable.
+
+```{r}
+    od <- read.csv("odb.csv")
+    od
+    str(od)
+```
+
+# Question 6
+Filter the od dataset to retrieve only the observation from Mexico, grouped by year and in descending order selecting the "ODB_Rank column
+```{r}
+    library(dplyr)
+
+    od <- read.csv("odb.csv")
+    
+    filtered_observations <- od %>% filter(Economy == "Mexico") %>% group_by(year) %>% arrange(ODB_Rank)
+    filtered_observations
+    print(filtered_observations)
+```
+
+# Question 7
+Create a new variable called od_year grouping per "year" and "Income group" variables. Then, remove NAs observations. Later, using the function summarize() you should estimate the median of the GDP_PPP variable and store it in a variable called "medianValue"
+```{r}
+    library(dplyr)
+
+    od <- read.csv("odb.csv")
+    od_year <- od %>%
+      group_by(year, Income.group) %>%
+      filter(!is.na(GDP_PPP)) %>%
+      summarize(medianValue = mean(GDP_PPP))
+
+    od_year
+```
+
+# Question 8
+Create a line plot graph to visualize trends over time. You should use the variables created in the od_year data frame using Income group as color
+
+```{r}
+
+  library(dplyr)
+  library(ggplot2)
+
+  ggplot(od_year, aes(x = year, y = medianValue, color = Income.group)) + geom_line() + ggtitle("Trends over time of GDP_PPP")
+
+```
+
+# Question 9
+Create a new variable called od_latin filtering per Region, selecting Latin America & Caribbean and grouping per Income group.
+
+```{r}
+  od_latin <- od_latin %>% 
+    filter(Region == "Latin America & Caribbean") %>% 
+    group_by(Income.group) %>%
+    filter(!is.na(Individuals_using_Internet) & !is.na(GDP_PPP) & !is.na(Income.group)) 
+  od_latin
+  
+  ggplot(od_latin, aes(x = Individuals_using_Internet, y = GDP_PPP, color = Income.group)) +
+    geom_point() + 
+    facet_wrap(~Economy)
+
+```
+
+# Question 10
+Create a new variable called od_2016 filtering the year 2016 and removing observations that contain NAs.
+
+```{r}
+  od_2016 <- od %>%
+    filter(year == 2016) %>% 
+    filter(!is.na(Technological_adoption) & !is.na(GDP_PPP) & !is.na(Income.group))
+  od_2016
+  
+  ggplot(od_2016, aes(x = Technological_adoption, y = GDP_PPP, color = Income.group)) + geom_point() + scale_x_log10() + scale_y_log10() + facet_wrap(~Region)
+
+```
+
+
